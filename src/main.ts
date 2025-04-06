@@ -7,6 +7,7 @@ import Antd from 'ant-design-vue';
 import 'ant-design-vue/dist/reset.css';
 import zhCN from 'ant-design-vue/es/locale/zh_CN'; // 引入中文语言包
 import { ConfigProvider } from 'ant-design-vue'; // 引入 ConfigProvider 组件
+import "@/access.ts" // 引入权限控制文件
 
 const app = createApp(App)
 

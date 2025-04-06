@@ -15,7 +15,6 @@
 </template>
 
 <script setup lang="ts">
-
 import GlobalHeader from '@/components/GlobalHeader.vue'
 </script>
 
@@ -28,7 +27,7 @@ import GlobalHeader from '@/components/GlobalHeader.vue'
 }
 
 #basicLayout .content{
-  padding: 24px 48px;
+  padding: 24px 24px;
   /* 背景颜色为渐变色（向右渐变） */
   background: linear-gradient(to right, #fefefe, #fff);
 }
