@@ -77,10 +77,6 @@ const columns = [
     dataIndex: 'createTime',
   },
   {
-    title: '更新时间',
-    dataIndex: 'updateTime',
-  },
-  {
     title: '操作',
     key: 'action',
   },
@@ -139,7 +135,6 @@ const doSearch = () => {
   fetchData()
 }
 
-//删除数据
 // 删除数据
 const doDelete = async (id: string) => {
   if (!id) {
