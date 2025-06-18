@@ -46,6 +46,19 @@
             <a-descriptions-item label="大小">
               {{ formatSize(picture.picSize) }}
             </a-descriptions-item>
+            <a-descriptions-item label="主色调">
+              <a-space>
+                {{ picture.picColor ?? '-' }}
+                <div
+                  v-if="picture.picColor"
+                  :style="{
+                    backgroundColor: toHexColor(picture.picColor),
+                    width: '16px',
+                    height: '16px',
+                  }"
+                />
+              </a-space>
+            </a-descriptions-item>
           </a-descriptions>
           <!-- 图片操作按钮，对于图片上传者或管理员，可以编辑和删除图片 -->
           <a-space wrap>
@@ -53,6 +66,12 @@
               免费下载
               <template #icon>
                 <DownloadOutlined />
+              </template>
+            </a-button>
+            <a-button type="primary" ghost @click="doShare">
+              分享
+              <template #icon>
+                <share-alt-outlined />
               </template>
             </a-button>
             <a-button v-if="canEdit" type="default" @click="doEdit">
@@ -68,10 +87,10 @@
               </template>
             </a-button>
           </a-space>
-
         </a-card>
       </a-col>
     </a-row>
+    <ShareModal ref="shareModalRef" :link="shareLink" />
   </div>
 </template>
 
@@ -82,6 +101,7 @@ import { message } from 'ant-design-vue'
 import { downloadImage, formatSize } from '../utils'
 import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
 import router from '@/router'
+import ShareModal from '@/components/ShareModal.vue'
 
 const props = defineProps<{
   id: string | number
@@ -112,7 +132,7 @@ onMounted(() => {
 const loginUserStore = useLoginUserStore()
 // 是否具有编辑权限
 const canEdit = computed(() => {
-  const loginUser = loginUserStore.loginUser;
+  const loginUser = loginUserStore.loginUser
   // 未登录不可编辑
   if (!loginUser.id) {
     return false
@@ -128,8 +148,8 @@ const doEdit = () => {
     path: '/add_picture',
     query: {
       id: picture.value.id,
-      spaceId: picture.value.spaceId
-    }
+      spaceId: picture.value.spaceId,
+    },
   })
 }
 
@@ -152,6 +172,30 @@ const doDownload = () => {
   downloadImage(picture.value.url)
 }
 
+function toHexColor(input: string) {
+  // 去掉 0x 前缀
+  const colorValue = input.startsWith('0x') ? input.slice(2) : input
+
+  // 将剩余部分解析为十六进制数，再转成 6 位十六进制字符串
+  const hexColor = parseInt(colorValue, 16).toString(16).padStart(6, '0')
+
+  // 返回标准 #RRGGBB 格式
+  return `#${hexColor}`
+}
+
+// 分享弹窗引用
+const shareModalRef = ref()
+// 分享链接
+const shareLink = ref<string>()
+
+// 分享
+const doShare = () => {
+  shareLink.value = `${window.location.protocol}//${window.location.host}/picture/${picture.value.id}`
+  if (shareModalRef.value) {
+    shareModalRef.value.openModal()
+  }
+}
+
 </script>
 
 <style scoped>
@@ -159,4 +203,3 @@ const doDownload = () => {
   margin-bottom: 16px;
 }
 </style>
-

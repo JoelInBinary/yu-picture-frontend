@@ -31,27 +31,42 @@
               </template>
             </a-card-meta>
             <template v-if="showOp" #actions>
-              <a-space @click="e => doEdit(picture, e)">
-                <edit-outlined />
-                编辑
-              </a-space>
-              <a-space @click="e => confirmDelete(picture, e)">
-                <delete-outlined />
-                删除
-              </a-space>
+              <a-tooltip title="以图搜图">
+                <template #default>
+                  <search-outlined @click="(e) => doSearch(picture, e)" />
+                </template>
+              </a-tooltip>
+              <a-tooltip title="分享">
+                <template #default>
+                  <share-alt-outlined @click="(e) => doShare(picture, e)" />
+                </template>
+              </a-tooltip>
+              <a-tooltip title="编辑">
+                <template #default>
+                  <edit-outlined @click="(e) => doEdit(picture, e)" />
+                </template>
+              </a-tooltip>
+              <a-tooltip title="删除">
+                <template #default>
+                  <delete-outlined @click="(e) => doDelete(picture, e)" />
+                </template>
+              </a-tooltip>
             </template>
           </a-card>
         </a-list-item>
       </template>
     </a-list>
+    <ShareModal ref="shareModalRef" :link="shareLink" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons-vue'
+import { EditOutlined, DeleteOutlined, SearchOutlined, ShareAltOutlined } from '@ant-design/icons-vue'
 import { deletePictureUsingPost } from '@/api/pictureController.ts'
 import { message, Modal } from 'ant-design-vue'
+import ShareModal from '@/components/ShareModal.vue'
+import { ref } from 'vue'
 
 interface Props {
   dataList?: API.PictureVO[]
@@ -118,6 +133,29 @@ const doDelete = async (picture: API.PictureVO) => {
     message.error('删除失败')
   }
 }
+
+// 以图搜图搜索
+const doSearch = (picture, e) => {
+  // 阻止冒泡
+  e.stopPropagation()
+  // 打开新窗口
+  window.open(`/search_picture?pictureId=${picture.id}`)
+}
+
+// 分享弹窗引用
+const shareModalRef = ref()
+// 分享链接
+const shareLink = ref<string>()
+
+// 分享
+const doShare = (picture: API.PictureVO, e: Event) => {
+  e.stopPropagation()
+  shareLink.value = `${window.location.protocol}//${window.location.host}/picture/${picture.id}`
+  if (shareModalRef.value) {
+    shareModalRef.value.openModal()
+  }
+}
+
 </script>
 
 <style scoped>
